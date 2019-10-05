@@ -1,0 +1,77 @@
+group 'com.spdtest'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
+
+buildscript {
+    ext {
+        appVersion = "0.0.1-SNAPSHOT"
+        springbootVersion = "2.0.4.RELEASE"
+    }
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+       classpath("org.springframework.boot:spring-boot-gradle-plugin:$springbootVersion")
+    }
+}
+
+jar.archiveName = "google-clone-${appVersion}.jar"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+ext['project.build.sourceEncoding'] = 'UTF-8'
+ext['start-class'] = 'com.spdtest.googleclone.GoogleCloneApplication'
+ext['java.version'] = '1.8'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$springbootVersion"
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+
+    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-core
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.2.0'
+    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common
+    compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.2.0'
+    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser
+    compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.2.0'
+    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-highlighter
+    compile group: 'org.apache.lucene', name: 'lucene-highlighter', version: '8.2.0'
+
+    // https://mvnrepository.com/artifact/javax.inject/javax.inject
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.12.1'
+
+    // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '8.0.36'
+
+    // https://mvnrepository.com/artifact/jstl/jstl
+    compile group: 'jstl', name: 'jstl', version: '1.2'
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3.1'
+}

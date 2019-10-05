@@ -1,0 +1,12 @@
+target
+.idea/tasks.xm
+.DS_Store
+node_modules
+*.pid
+/build
+/classes
+.gradle
+.idea
+*.iml
+*.esproj
+/out
