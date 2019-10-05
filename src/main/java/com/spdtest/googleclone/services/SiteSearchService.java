@@ -14,11 +14,13 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ import java.util.List;
 public class SiteSearchService implements GoogleCloneConstants {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Inject
+    private PropertyService propertyService;
 
     public List<SiteModel> search(String textToFind) {
         try {
@@ -56,18 +61,26 @@ public class SiteSearchService implements GoogleCloneConstants {
         }
     }
 
-    private static IndexSearcher createIndexSearcher() throws IOException
-    {
-        Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
+    private IndexSearcher createIndexSearcher() throws IOException {
+        Directory dir = FSDirectory.open(Paths.get(propertyService.getIndexPath()));
         IndexReader reader = DirectoryReader.open(dir);
         return new IndexSearcher(reader);
     }
 
-    private static TopDocs searchInContent(String textToFind, IndexSearcher searcher) throws Exception
-    {
+    private TopDocs searchInContent(String textToFind, IndexSearcher searcher) throws Exception {
         QueryParser qp = new QueryParser(FIELD_CONTENT, new StandardAnalyzer());
         Query query = qp.parse(textToFind);
 
         return searcher.search(query, 10);
+    }
+
+    @VisibleForTesting
+    PropertyService getPropertyService() {
+        return propertyService;
+    }
+
+    @VisibleForTesting
+    void setPropertyService(PropertyService propertyService) {
+        this.propertyService = propertyService;
     }
 }

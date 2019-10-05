@@ -11,6 +11,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
+import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,9 @@ public class SiteIndexService implements GoogleCloneConstants {
 
     @Inject
     private SiteParseService siteParseService;
+
+    @Inject
+    private PropertyService propertyService;
 
     public void indexSite(String url, int totalDepth) {
         Set<SiteModel> siteModels = siteParseService.generateSiteModels(url, totalDepth);
@@ -62,20 +66,28 @@ public class SiteIndexService implements GoogleCloneConstants {
         }
     }
 
-    private IndexWriter createIndexWriter() throws IOException
-    {
-        FSDirectory directory = FSDirectory.open(Paths.get(INDEX_DIR));
+    private IndexWriter createIndexWriter() throws IOException {
+        FSDirectory directory = FSDirectory.open(Paths.get(propertyService.getIndexPath()));
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
         return new IndexWriter(directory, config);
     }
 
-    private static Document createDocument(Integer id, SiteModel siteModel, String content)
-    {
+    private static Document createDocument(Integer id, SiteModel siteModel, String content) {
         Document document = new Document();
         document.add(new StringField(FIELD_ID, id.toString() , Field.Store.YES));
         document.add(new TextField(FIELD_URL, siteModel.getUrl() , Field.Store.YES));
         document.add(new TextField(FIELD_TITLE, siteModel.getTitle() , Field.Store.YES));
         document.add(new TextField(FIELD_CONTENT, content , Field.Store.YES));
         return document;
+    }
+
+    @VisibleForTesting
+    SiteParseService getSiteParseService() {
+        return siteParseService;
+    }
+
+    @VisibleForTesting
+    void setSiteParseService(SiteParseService siteParseService) {
+        this.siteParseService = siteParseService;
     }
 }
