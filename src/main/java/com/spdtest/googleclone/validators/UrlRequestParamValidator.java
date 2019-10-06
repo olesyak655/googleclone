@@ -11,11 +11,15 @@ public class UrlRequestParamValidator implements ConstraintValidator<Url, String
 
     @Override
     public boolean isValid(String url, ConstraintValidatorContext ctx) {
-        if(url == null){
-            return false;
+        boolean isValid = true;
+        if(url != null){
+            String regex = "\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            if (!url.matches(regex)) {
+                isValid = false;
+            }
+        } else {
+            isValid = false;
         }
-        String regex = "\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-        if (url.matches(regex)) return true;
-        else return false;
+        return isValid;
     }
 }

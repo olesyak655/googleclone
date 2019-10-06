@@ -11,6 +11,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.validation.ConstraintViolationException;
+
 @Controller
 public class BaseController {
 
@@ -31,6 +33,8 @@ public class BaseController {
                 appException = new AppException(httpException.getStatusCode(), exception);
             } else if (exception instanceof BindException) {
                 appException = new AppException(HttpStatus.BAD_REQUEST, exception);
+            } else if (exception instanceof ConstraintViolationException) {
+                appException = new AppException(HttpStatus.BAD_REQUEST, "Url isn't correct. Please try again");
             } else {
                 logger.error("Stack trace: ", exception);
 
