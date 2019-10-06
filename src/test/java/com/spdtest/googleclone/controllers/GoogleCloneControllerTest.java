@@ -78,6 +78,7 @@ public class GoogleCloneControllerTest extends BaseWebTest {
         mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
                 .param("q", URL_1)
                 .param("d", "2"))
+                .andExpect(forwardedUrl("/WEB-INF/views/indexresult.jsp"))
                 .andExpect(status().isOk());
     }
 

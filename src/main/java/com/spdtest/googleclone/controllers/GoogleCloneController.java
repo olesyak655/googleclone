@@ -32,15 +32,16 @@ public class GoogleCloneController extends BaseController {
     }
 
     @PostMapping("/index")
-    public ResponseEntity doIndex(
+    public String doIndex(
             @Url
             @RequestParam("q") String url,
             @RequestParam(value = "d", required = false, defaultValue = "3") int totalDepth,
             Model model) {
 
+        model.addAttribute("q", url);
         siteIndexService.indexSite(url, totalDepth);
      //   https://spring.io/guides/gs/serving-web-content/
-        return ResponseEntity.ok().build();
+        return "indexresult";
     }
 
     @GetMapping("/")
