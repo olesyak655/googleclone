@@ -2,12 +2,14 @@ package com.spdtest.googleclone.controllers;
 
 import com.spdtest.googleclone.BaseWebTest;
 import com.spdtest.googleclone.GoogleCloneApplication;
+import com.spdtest.googleclone.exceptions.AppException;
 import com.spdtest.googleclone.models.SiteModel;
 import com.spdtest.googleclone.services.SiteIndexService;
 import com.spdtest.googleclone.services.SiteSearchService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,9 +20,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class GoogleCloneControllerTest extends BaseWebTest {
@@ -83,6 +83,15 @@ public class GoogleCloneControllerTest extends BaseWebTest {
     }
 
     @Test
+    public void testDoIndexIncorrectUrl() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
+                .param("q", URL_INCORRECT)
+                .param("d", "2"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testSearch() throws Exception {
 
         mvc.perform(MockMvcRequestBuilders.get(SERVER_URL + "/"))
@@ -103,5 +112,16 @@ public class GoogleCloneControllerTest extends BaseWebTest {
                 .param(PARAM_QUERY, PARAM_QUERY_VALUE))
                 .andExpect(forwardedUrl("/WEB-INF/views/searchresult.jsp"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDoSearchIsFailed() throws Exception {
+
+        doThrow(new AppException(HttpStatus.NOT_FOUND, "Search by text " + PARAM_QUERY_VALUE + " is failed"))
+                .when(mockedSiteSearchService).search(PARAM_QUERY_VALUE);
+
+        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
+                .param(PARAM_QUERY, PARAM_QUERY_VALUE))
+                .andExpect(status().isNotFound());
     }
 }

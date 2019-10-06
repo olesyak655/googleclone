@@ -6,6 +6,7 @@ public interface TestConstants {
 
     String URL_1 = "https://spring.io/guides/";
     String URL_2 = "https://spring.io/";
+    String URL_INCORRECT = "Bad_url";
 
     String TITLE_1 = "Spring guide";
     String TITLE_2 = "Spring";
