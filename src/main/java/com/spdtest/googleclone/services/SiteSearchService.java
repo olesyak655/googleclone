@@ -41,12 +41,12 @@ public class SiteSearchService implements GoogleCloneConstants {
             TopDocs foundDocs = searchInContent(textToFind, searcher);
             List<SiteModel> searchedSiteModels = new ArrayList<>();
 
-            logger.info("Total Results : {} " + foundDocs.totalHits);
-            System.out.println("Total Results :: " + foundDocs.totalHits);
+            logger.info("Total Results : {} ", foundDocs.totalHits);
 
             for (ScoreDoc scoreDoc : foundDocs.scoreDocs) {
                 Document document = searcher.doc(scoreDoc.doc);
-                System.out.println("URL : " + document.get(FIELD_URL) + "\nTitle : " + document.get(FIELD_TITLE) + ", \nScore : " + scoreDoc.score);
+
+                logger.info("URL : {}, Title : {}, Score : {}", document.get(FIELD_URL), document.get(FIELD_TITLE), scoreDoc.score);
 
                 SiteModel siteModel = new SiteModel();
                 siteModel.setUrl(document.get(FIELD_URL));

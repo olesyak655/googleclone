@@ -23,7 +23,7 @@ public class SiteParseService {
         Set<SiteModel> siteModels = new HashSet<>();
         generateSiteModels(url, siteModels, 0, totalDepth);
 
-        logger.info("Set of the site models with url and title is generated. Size: {}", siteModels.size());
+        logger.info("Set of the site models with url and title is generated. Size: {}. Please wait, indexes are creating", siteModels.size());
 
         return siteModels;
     }
@@ -42,6 +42,7 @@ public class SiteParseService {
             currentDepth++;
 
             boolean isAddToSet = siteModels.add(siteModel);
+            logger.info(url);
 
             if (documentLinks.isEmpty() || currentDepth > totalDepth || !isAddToSet) {
                 return;
@@ -50,7 +51,6 @@ public class SiteParseService {
             documentLinks.stream()
                     .map(documentLink -> documentLink.absUrl("href")) //"abs:href"
                     .forEachOrdered(documentUrl -> {
-                        System.out.println(documentUrl);
                         generateSiteModels(documentUrl, siteModels, currentDepthFinal, totalDepth);
                     });
 
