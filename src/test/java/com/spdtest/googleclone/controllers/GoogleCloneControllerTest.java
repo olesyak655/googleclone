@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GoogleCloneControllerTest extends BaseWebTest {
 
-    @Inject
     private WebApplicationContext context;
 
     private SiteIndexService mockedSiteIndexService;
@@ -123,5 +122,10 @@ public class GoogleCloneControllerTest extends BaseWebTest {
         mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
                 .param(PARAM_QUERY, PARAM_QUERY_VALUE))
                 .andExpect(status().isNotFound());
+    }
+
+    @Inject
+    public void setContext(WebApplicationContext context) {
+        this.context = context;
     }
 }

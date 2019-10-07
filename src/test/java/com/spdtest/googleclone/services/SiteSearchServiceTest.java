@@ -20,10 +20,8 @@ import static org.mockito.Mockito.when;
 
 public class SiteSearchServiceTest extends BaseWebTest {
 
-    @Inject
-    private ApplicationContext context;
 
-    @Inject
+    private ApplicationContext context;
     private SiteSearchService siteSearchService;
 
     private PropertyService mockedPropertyService;
@@ -80,5 +78,15 @@ public class SiteSearchServiceTest extends BaseWebTest {
             assertEquals("Search by text guides is failed", e.getMessage().trim());
             assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus());
         }
+    }
+
+    @Inject
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    @Inject
+    public void setSiteSearchService(SiteSearchService siteSearchService) {
+        this.siteSearchService = siteSearchService;
     }
 }

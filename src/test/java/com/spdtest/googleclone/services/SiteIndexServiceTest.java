@@ -21,13 +21,8 @@ import static org.mockito.Mockito.*;
 
 public class SiteIndexServiceTest extends BaseWebTest {
 
-    @Inject
     private ApplicationContext context;
-
-    @Inject
     private SiteIndexService siteIndexService;
-
-    @Inject
     private PropertyService propertyService;
 
     private SiteParseService mockedSiteParseService;
@@ -72,5 +67,20 @@ public class SiteIndexServiceTest extends BaseWebTest {
         siteIndexService.indexSite(URL_1, 2);
 
         assertTrue(new File(propertyService.getIndexPath()).exists());
+    }
+
+    @Inject
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    @Inject
+    public void setSiteIndexService(SiteIndexService siteIndexService) {
+        this.siteIndexService = siteIndexService;
+    }
+
+    @Inject
+    public void setPropertyService(PropertyService propertyService) {
+        this.propertyService = propertyService;
     }
 }
