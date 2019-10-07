@@ -50,7 +50,7 @@ public class SiteSearchServiceTest extends BaseWebTest {
     @Test
     public void testSearch() throws IOException {
 
-        when(mockedPropertyService.getIndexPath()).thenReturn("temp_test/google_clone_index");
+        when(mockedPropertyService.getIndexPath()).thenReturn("src/test/resources/temp_test/google_clone_index");
 
         List<SiteModel> siteModels = siteSearchService.search("guides");
 

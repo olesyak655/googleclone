@@ -29,11 +29,14 @@ public class SiteIndexService implements GoogleCloneConstants {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Inject
     private SiteParseService siteParseService;
+    private PropertyService propertyService;
 
     @Inject
-    private PropertyService propertyService;
+    public SiteIndexService(SiteParseService siteParseService, PropertyService propertyService) {
+        this.siteParseService = siteParseService;
+        this.propertyService = propertyService;
+    }
 
     public void indexSite(String url, int totalDepth) {
         Set<SiteModel> siteModels = siteParseService.generateSiteModels(url, totalDepth);
@@ -44,8 +47,7 @@ public class SiteIndexService implements GoogleCloneConstants {
 
     private void writeIndexes(Set<SiteModel> siteModels) {
 
-        try {
-            IndexWriter writer = createIndexWriter();
+        try (IndexWriter writer = createIndexWriter()) {
 
             List<Document> documents = new ArrayList<>();
             int i = 0;
@@ -59,7 +61,6 @@ public class SiteIndexService implements GoogleCloneConstants {
             writer.deleteAll();
             writer.addDocuments(documents);
             writer.commit();
-            writer.close();
 
         } catch(IOException e) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Site cann't be indexed", e);

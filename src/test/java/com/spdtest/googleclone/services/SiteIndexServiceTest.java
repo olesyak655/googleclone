@@ -66,7 +66,7 @@ public class SiteIndexServiceTest extends BaseWebTest {
 
         when(mockedSiteParseService.generateSiteModels(URL_1, 2)).thenReturn(siteModels);
 
-        doReturn("Content from site spring.io").doReturn("Content from site spring.io/guides with guides")
+        doReturn("Content from site mysite.io").doReturn("Content from site mysite.io/guides with guides")
                 .when(mockedSiteParseService).generateText(any());
 
         siteIndexService.indexSite(URL_1, 2);

@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,40 +30,40 @@ public class SiteSearchService implements GoogleCloneConstants {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Inject
     private PropertyService propertyService;
+
+    @Inject
+    public SiteSearchService(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
 
     public List<SiteModel> search(String textToFind) {
         try {
-            IndexSearcher searcher = createIndexSearcher();
+            Directory dir = FSDirectory.open(Paths.get(propertyService.getIndexPath()));
+            try (IndexReader reader = DirectoryReader.open(dir)) {
+                IndexSearcher searcher = new IndexSearcher(reader);
 
-            TopDocs foundDocs = searchInContent(textToFind, searcher);
-            List<SiteModel> searchedSiteModels = new ArrayList<>();
+                TopDocs foundDocs = searchInContent(textToFind, searcher);
+                List<SiteModel> searchedSiteModels = new ArrayList<>();
 
-            logger.info("Total Results : {} ", foundDocs.totalHits);
+                logger.info("Total Results : {} ", foundDocs.totalHits);
 
-            for (ScoreDoc scoreDoc : foundDocs.scoreDocs) {
-                Document document = searcher.doc(scoreDoc.doc);
+                for (ScoreDoc scoreDoc : foundDocs.scoreDocs) {
+                    Document document = searcher.doc(scoreDoc.doc);
 
-                logger.info("URL : {}, Title : {}, Score : {}", document.get(FIELD_URL), document.get(FIELD_TITLE), scoreDoc.score);
+                    logger.info("URL : {}, Title : {}, Score : {}", document.get(FIELD_URL), document.get(FIELD_TITLE), scoreDoc.score);
 
-                SiteModel siteModel = new SiteModel();
-                siteModel.setUrl(document.get(FIELD_URL));
-                siteModel.setTitle(document.get(FIELD_TITLE));
+                    SiteModel siteModel = new SiteModel();
+                    siteModel.setUrl(document.get(FIELD_URL));
+                    siteModel.setTitle(document.get(FIELD_TITLE));
 
-                searchedSiteModels.add(siteModel);
+                    searchedSiteModels.add(siteModel);
+                }
+                return searchedSiteModels;
             }
-
-            return searchedSiteModels;
         } catch (Exception e) {
             throw new AppException(HttpStatus.NOT_FOUND, "Search by text " + textToFind + " is failed", e);
         }
-    }
-
-    private IndexSearcher createIndexSearcher() throws IOException {
-        Directory dir = FSDirectory.open(Paths.get(propertyService.getIndexPath()));
-        IndexReader reader = DirectoryReader.open(dir);
-        return new IndexSearcher(reader);
     }
 
     private TopDocs searchInContent(String textToFind, IndexSearcher searcher) throws Exception {

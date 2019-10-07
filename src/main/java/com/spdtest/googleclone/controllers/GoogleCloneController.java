@@ -17,13 +17,16 @@ import java.util.List;
 
 @Controller
 @Validated
-public class GoogleCloneController extends BaseController {
+public class GoogleCloneController {
 
-    @Inject
     private SiteSearchService siteSearchService;
+    private SiteIndexService siteIndexService;
 
     @Inject
-    private SiteIndexService siteIndexService;
+    public GoogleCloneController(SiteSearchService siteSearchService, SiteIndexService siteIndexService) {
+        this.siteSearchService = siteSearchService;
+        this.siteIndexService = siteIndexService;
+    }
 
     @GetMapping("/index")
     public String index() {
