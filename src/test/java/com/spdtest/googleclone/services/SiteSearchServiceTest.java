@@ -20,10 +20,8 @@ import static org.mockito.Mockito.when;
 
 public class SiteSearchServiceTest extends BaseWebTest {
 
-    @Inject
-    private ApplicationContext context;
 
-    @Inject
+    private ApplicationContext context;
     private SiteSearchService siteSearchService;
 
     private PropertyService mockedPropertyService;
@@ -50,7 +48,7 @@ public class SiteSearchServiceTest extends BaseWebTest {
     @Test
     public void testSearch() throws IOException {
 
-        when(mockedPropertyService.getIndexPath()).thenReturn("temp_test/google_clone_index");
+        when(mockedPropertyService.getIndexPath()).thenReturn("src/test/resources/temp_test/google_clone_index");
 
         List<SiteModel> siteModels = siteSearchService.search("guides");
 
@@ -80,5 +78,15 @@ public class SiteSearchServiceTest extends BaseWebTest {
             assertEquals("Search by text guides is failed", e.getMessage().trim());
             assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus());
         }
+    }
+
+    @Inject
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    @Inject
+    public void setSiteSearchService(SiteSearchService siteSearchService) {
+        this.siteSearchService = siteSearchService;
     }
 }
