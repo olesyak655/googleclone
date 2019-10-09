@@ -11,7 +11,6 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
-import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -80,15 +79,5 @@ public class SiteIndexService implements GoogleCloneConstants {
         document.add(new TextField(FIELD_TITLE, siteModel.getTitle() , Field.Store.YES));
         document.add(new TextField(FIELD_CONTENT, content , Field.Store.YES));
         return document;
-    }
-
-    @VisibleForTesting
-    SiteParseService getSiteParseService() {
-        return siteParseService;
-    }
-
-    @VisibleForTesting
-    void setSiteParseService(SiteParseService siteParseService) {
-        this.siteParseService = siteParseService;
     }
 }

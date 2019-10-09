@@ -4,7 +4,6 @@ import com.spdtest.googleclone.models.SiteModel;
 import com.spdtest.googleclone.services.SiteIndexService;
 import com.spdtest.googleclone.services.SiteSearchService;
 import com.spdtest.googleclone.validators.Url;
-import org.assertj.core.util.VisibleForTesting;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -61,25 +60,5 @@ public class GoogleCloneController {
         model.addAttribute("siteModels", siteModels);
 
         return "searchresult";
-    }
-
-    @VisibleForTesting
-    SiteIndexService getSiteIndexService() {
-        return siteIndexService;
-    }
-
-    @VisibleForTesting
-    void setSiteIndexService(SiteIndexService siteIndexService) {
-        this.siteIndexService = siteIndexService;
-    }
-
-    @VisibleForTesting
-    SiteSearchService getSiteSearchService() {
-        return siteSearchService;
-    }
-
-    @VisibleForTesting
-    void setSiteSearchService(SiteSearchService siteSearchService) {
-        this.siteSearchService = siteSearchService;
     }
 }

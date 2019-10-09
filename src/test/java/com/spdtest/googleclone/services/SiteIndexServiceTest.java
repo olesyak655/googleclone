@@ -1,15 +1,12 @@
 package com.spdtest.googleclone.services;
 
-import com.spdtest.googleclone.BaseWebTest;
-import com.spdtest.googleclone.GoogleCloneApplication;
 import com.spdtest.googleclone.models.SiteModel;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -19,31 +16,29 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class SiteIndexServiceTest extends BaseWebTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class SiteIndexServiceTest {
 
-    private ApplicationContext context;
+    private static final String URL_1 = "https://mysite.io/guides/";
+    private static final String URL_2 = "https://mysite.io/";
+
+    private static final String TITLE_1 = "MySite guide";
+    private static final String TITLE_2 = "MySite";
+
     private SiteIndexService siteIndexService;
     private PropertyService propertyService;
 
     private SiteParseService mockedSiteParseService;
-    private SiteParseService originalSiteParseService;
 
     @Before
     public void setUp() {
 
-        GoogleCloneApplication.setContext(context);
-
-        SiteIndexService serviceUnderTest = context.getBean(SiteIndexService.class);
-
-        this.originalSiteParseService = serviceUnderTest.getSiteParseService();
         this.mockedSiteParseService = mock(SiteParseService.class);
-        serviceUnderTest.setSiteParseService(mockedSiteParseService);
-    }
 
-    @After
-    public void tearDown() {
-        SiteIndexService serviceUnderTest = context.getBean(SiteIndexService.class);
-        serviceUnderTest.setSiteParseService(originalSiteParseService);
+        this.propertyService = new PropertyService();
+        propertyService.setIndexPath("./temp_test/google_clone_index");
+
+        this.siteIndexService = new SiteIndexService(mockedSiteParseService, propertyService);
     }
 
     @Test
@@ -69,18 +64,12 @@ public class SiteIndexServiceTest extends BaseWebTest {
         assertTrue(new File(propertyService.getIndexPath()).exists());
     }
 
-    @Inject
-    public void setContext(ApplicationContext context) {
-        this.context = context;
-    }
+    private SiteModel createSiteModel(String url, String title) {
 
-    @Inject
-    public void setSiteIndexService(SiteIndexService siteIndexService) {
-        this.siteIndexService = siteIndexService;
-    }
+        SiteModel siteModel = new SiteModel();
+        siteModel.setUrl(url);
+        siteModel.setTitle(title);
 
-    @Inject
-    public void setPropertyService(PropertyService propertyService) {
-        this.propertyService = propertyService;
+        return siteModel;
     }
 }

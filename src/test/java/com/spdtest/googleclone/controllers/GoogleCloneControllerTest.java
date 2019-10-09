@@ -1,70 +1,64 @@
 package com.spdtest.googleclone.controllers;
 
-import com.spdtest.googleclone.BaseWebTest;
-import com.spdtest.googleclone.GoogleCloneApplication;
 import com.spdtest.googleclone.exceptions.AppException;
 import com.spdtest.googleclone.models.SiteModel;
 import com.spdtest.googleclone.services.SiteIndexService;
 import com.spdtest.googleclone.services.SiteSearchService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.inject.Inject;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GoogleCloneControllerTest extends BaseWebTest {
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = GoogleCloneController.class)
+@ActiveProfiles(profiles = "test")
+public class GoogleCloneControllerTest {
 
-    private WebApplicationContext context;
+    private static final String SERVER_URL = "http://localhost:8080";
+    private static final String URL_1 = "https://mysite.io/guides/";
+    private static final String URL_2 = "https://mysite.io/";
+    private static final String URL_INCORRECT = "Bad_url";
 
+    private static final String TITLE_1 = "MySite guide";
+    private static final String TITLE_2 = "MySite";
+
+    private static final String PARAM_QUERY = "query";
+    private static final String PARAM_QUERY_VALUE = "SpringBoot";
+
+    @MockBean
     private SiteIndexService mockedSiteIndexService;
-    private SiteIndexService originalSiteIndexService;
-
+    @MockBean
     private SiteSearchService mockedSiteSearchService;
-    private SiteSearchService originalSiteSearchService;
 
-    private MockMvc mvc;
+    @Autowired
+    private MockMvc mockMvc;
 
     @Before
-    public void setUp() {
-
-        GoogleCloneApplication.setContext(context);
-
-        this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-
-        GoogleCloneController controllerUnderTest = context.getBean(GoogleCloneController.class);
-
-        this.originalSiteIndexService = controllerUnderTest.getSiteIndexService();
-        this.mockedSiteIndexService = mock(SiteIndexService.class);
-        controllerUnderTest.setSiteIndexService(mockedSiteIndexService);
-
-        this.originalSiteSearchService = controllerUnderTest.getSiteSearchService();
-        this.mockedSiteSearchService = mock(SiteSearchService.class);
-        controllerUnderTest.setSiteSearchService(mockedSiteSearchService);
-
-    }
-
-    @After
-    public void tearDown() {
-        GoogleCloneController controllerUnderTest = context.getBean(GoogleCloneController.class);
-        controllerUnderTest.setSiteIndexService(originalSiteIndexService);
-        controllerUnderTest.setSiteSearchService(originalSiteSearchService);
+    public void setup() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/WEB-INF/views/");
+        viewResolver.setSuffix(".jsp");
     }
 
     @Test
     public void testIndex() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.get(SERVER_URL + "/index"))
+        mockMvc.perform(MockMvcRequestBuilders.get(SERVER_URL + "/index"))
                 .andExpect(forwardedUrl("/WEB-INF/views/index.jsp"))
                 .andExpect(status().isOk());
     }
@@ -74,7 +68,7 @@ public class GoogleCloneControllerTest extends BaseWebTest {
 
         doNothing().when(mockedSiteIndexService).indexSite(URL_1, 2);
 
-        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
+        mockMvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
                 .param("q", URL_1)
                 .param("d", "2"))
                 .andExpect(forwardedUrl("/WEB-INF/views/indexresult.jsp"))
@@ -84,7 +78,7 @@ public class GoogleCloneControllerTest extends BaseWebTest {
     @Test
     public void testDoIndexIncorrectUrl() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
+        mockMvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/index")
                 .param("q", URL_INCORRECT)
                 .param("d", "2"))
                 .andExpect(status().isBadRequest());
@@ -93,7 +87,7 @@ public class GoogleCloneControllerTest extends BaseWebTest {
     @Test
     public void testSearch() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.get(SERVER_URL + "/"))
+        mockMvc.perform(MockMvcRequestBuilders.get(SERVER_URL + "/"))
                 .andExpect(forwardedUrl("/WEB-INF/views/search.jsp"))
                 .andExpect(status().isOk());
     }
@@ -107,7 +101,7 @@ public class GoogleCloneControllerTest extends BaseWebTest {
 
         when(mockedSiteSearchService.search(PARAM_QUERY_VALUE)).thenReturn(siteModels);
 
-        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
+        mockMvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
                 .param(PARAM_QUERY, PARAM_QUERY_VALUE))
                 .andExpect(forwardedUrl("/WEB-INF/views/searchresult.jsp"))
                 .andExpect(status().isOk());
@@ -119,13 +113,19 @@ public class GoogleCloneControllerTest extends BaseWebTest {
         doThrow(new AppException(HttpStatus.NOT_FOUND, "Search by text " + PARAM_QUERY_VALUE + " is failed"))
                 .when(mockedSiteSearchService).search(PARAM_QUERY_VALUE);
 
-        mvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
+        mockMvc.perform(MockMvcRequestBuilders.post(SERVER_URL + "/search")
                 .param(PARAM_QUERY, PARAM_QUERY_VALUE))
                 .andExpect(status().isNotFound());
     }
 
-    @Inject
-    public void setContext(WebApplicationContext context) {
-        this.context = context;
+    private SiteModel createSiteModel(String url, String title) {
+
+        SiteModel siteModel = new SiteModel();
+        siteModel.setUrl(url);
+        siteModel.setTitle(title);
+
+        return siteModel;
     }
 }
+
+
