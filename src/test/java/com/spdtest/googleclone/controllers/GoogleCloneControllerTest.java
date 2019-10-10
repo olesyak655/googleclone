@@ -48,13 +48,6 @@ public class GoogleCloneControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Before
-    public void setup() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".jsp");
-    }
-
     @Test
     public void testIndex() throws Exception {
 
