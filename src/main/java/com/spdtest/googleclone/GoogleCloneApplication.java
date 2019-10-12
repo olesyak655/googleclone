@@ -1,6 +1,5 @@
 package com.spdtest.googleclone;
 
-import org.assertj.core.util.VisibleForTesting;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -14,10 +13,5 @@ public class GoogleCloneApplication {
 
         SpringApplication app = new SpringApplication(GoogleCloneApplication.class);
         context = app.run(args);
-    }
-
-    @VisibleForTesting
-    public static void setContext(ApplicationContext context) {
-        GoogleCloneApplication.context = context;
     }
 }

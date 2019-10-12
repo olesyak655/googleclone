@@ -14,7 +14,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -71,15 +70,5 @@ public class SiteSearchService implements GoogleCloneConstants {
         Query query = qp.parse(textToFind);
 
         return searcher.search(query, 10);
-    }
-
-    @VisibleForTesting
-    PropertyService getPropertyService() {
-        return propertyService;
-    }
-
-    @VisibleForTesting
-    void setPropertyService(PropertyService propertyService) {
-        this.propertyService = propertyService;
     }
 }
